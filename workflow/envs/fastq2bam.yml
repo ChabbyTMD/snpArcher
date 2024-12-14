@@ -5,7 +5,7 @@ channels:
 dependencies:
   - samtools==1.14
   - fastp==0.20.1
-  - bwa==0.7.17
+  - bwa-mem2==2.2.1
   - sra-tools==3.0.0
   - ncbi-datasets-cli==11.25.1
   - p7zip==16.02
