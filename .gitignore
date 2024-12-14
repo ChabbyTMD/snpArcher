@@ -50,3 +50,5 @@ tmp/
 # pixi environments
 .pixi
 *.egg-info
+
+.test/ecoli/config/resources.yaml
