@@ -63,3 +63,5 @@ workflow/modules/svArcher/envs/svArcher-bare.yml
 # pixi environments
 .pixi
 *.egg-info
+
+.test/ecoli/config/resources.yaml
