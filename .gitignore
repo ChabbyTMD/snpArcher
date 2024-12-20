@@ -46,3 +46,4 @@ tmp/
 .test/trackhub/*.sizes
 .test/trackhub/out.log
 .test/ecoli/config/resources.yaml
+profiles/MESX
