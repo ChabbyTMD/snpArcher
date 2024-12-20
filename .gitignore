@@ -65,3 +65,4 @@ workflow/modules/svArcher/envs/svArcher-bare.yml
 *.egg-info
 
 .test/ecoli/config/resources.yaml
+profiles/MESX
