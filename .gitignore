@@ -52,3 +52,4 @@ tmp/
 *.egg-info
 
 .test/ecoli/config/resources.yaml
+profiles/MESX
