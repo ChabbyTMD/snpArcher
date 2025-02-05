@@ -62,3 +62,4 @@ workflow/modules/svArcher/envs/svArcher-bare.yml
 
 .test/ecoli/config/resources.yaml
 profiles/MESX
+Arabidopsis/
