@@ -15,7 +15,77 @@ wildcard_constraints:
     window="\d+"
 
 samples = snparcher_utils.parse_sample_sheet(config)
+REFGENOME = samples['refGenome'].unique().tolist()
 
 # Define rules here
 rule all:
-    pass
+    input:
+        expand("results/{refGenome}/SV/{method}/{sample}.vcf.gz", refGenome=REFGENOME, method=["read_pair", "read_depth", "split_read"], sample=samples["BioSample"].unique().tolist())
+
+rule read_pair:
+    """
+    Rule that implements the read pair methodology using ____
+    """
+    input:
+        unpack(get_bams)
+    output:
+        rp_vcf = temp("results/{refGenome}/SV/read_pair/{sample}.vcf.gz"),
+        rp_tbi = temp("results/{refGenome}/SV/read_pair/{sample}.vcf.gz.tbi")
+    log:
+        "logs/{refGenome}/SV/read_pair/{sample}.txt"
+    benchmark:
+        "benchmarks/{refGenome}/SV/read_pair/{sample}.txt"
+    # resources:
+    #     pass
+    conda:
+        "../envs/svArcher.yml"
+    shell:
+        # pass
+
+rule read_depth:
+    """
+    Rule that implements the read depth methodology using ____
+    """
+    input:
+        unpack(get_bams)
+    output:
+        rd_vcf = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz"),
+        rd_tbi = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz.tbi")
+    log:
+        "logs/{refGenome}/SV/read_depth/{sample}.txt"
+    benchmark:
+        "benchmarks/{refGenome}/SV/read_depth/{sample}.txt"
+    resources:
+        pass
+    conda:
+        "../envs/svArcher.yml"
+    shell:
+        pass
+
+rule split_read:
+    """
+    Rule that implements the split read methodology using ____
+    """
+    input:
+        unpack(get_bams)
+    output:
+        sr_vcf = temp("results/{refGenome}/SV/split_read/{sample}.vcf.gz"),
+        sr_tbi = temp("results/{refGenome}/SV/split_read/{sample}.vcf.gz.tbi")
+    log:
+        "logs/{refGenome}/SV/split_read/{sample}.txt"
+    benchmark:
+        "benchmarks/{refGenome}/SV/split_read/{sample}.txt"
+    resources:
+        pass
+    conda:
+        "../envs/svArcher.yml"
+    shell:
+        pass
+
+# Rule to merge SVS from all methods
+
+# Rule to filter SV calls from all methods
+
+# Rule to combine SV calls per sample
+
+# Rule to benchamrk SV calls against Arabidopsis Gotkay set
