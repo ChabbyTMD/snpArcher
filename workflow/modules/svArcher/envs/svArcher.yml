@@ -3,3 +3,6 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - survivor==1.0.7
+  - pindel==0.2.5b9
+  - lumpy-sv==0.3.1
