@@ -64,23 +64,35 @@ rule read_depth:
 
 rule split_read:
     """
-    Rule that implements the split read methodology using ____
+    Rule that implements the split read methodology using lumpy
     """
     input:
         unpack(get_bams)
+        fai = "results/{refGenome}/data/genome/{refGenome}.fna.fai"
     output:
-        sr_vcf = temp("results/{refGenome}/SV/split_read/{sample}.vcf.gz"),
-        sr_tbi = temp("results/{refGenome}/SV/split_read/{sample}.vcf.gz.tbi")
+        sr_vcf = temp("results/{refGenome}/SV/split_read/{sample}.vcf"),
+        sr_gz = "results/{refGenome}/SV/split_read/{sample}.vcf.gz",
+        sr_tbi = "results/{refGenome}/SV/split_read/{sample}.vcf.gz.tbi"
     log:
         "logs/{refGenome}/SV/split_read/{sample}.txt"
     benchmark:
         "benchmarks/{refGenome}/SV/split_read/{sample}.txt"
-    resources:
-        pass
     conda:
         "../envs/svArcher.yml"
     shell:
-        pass
+    # Call SVs with lumpy express, compress, reheader and index SV call file
+        """
+        lumpyexpress \
+            -B {input.bam} \
+            -o {output.sr_vcf} 2> {log}
+
+        bgzip {output.sr_vcf}
+
+        bcftools reheader -f {input.fai} {output.sr_gz} -o {output.sr_gz} && bcftools sort -Oz -o {output.sr_gz} - 2>>{log}
+        
+        tabix -p vcf {output.sr_tbi} 2>>{log}
+        
+        """
 
 # Rule to merge SVS from all methods
 
