@@ -24,43 +24,55 @@ rule all:
 
 rule read_pair:
     """
-    Rule that implements the read pair methodology using ____
+    Rule that implements the read pair methodology using manta
     """
     input:
-        unpack(get_bams)
+        unpack(get_bams),
+        ref = "results/{refGenome}/data/genome/{refGenome}.fna",
+        fai = "results/{refGenome}/data/genome/{refGenome}.fna.fai"
     output:
-        rp_vcf = temp("results/{refGenome}/SV/read_pair/{sample}.vcf.gz"),
-        rp_tbi = temp("results/{refGenome}/SV/read_pair/{sample}.vcf.gz.tbi")
+        rp_vcf = "results/{refGenome}/SV/read_pair/{sample}/{sample}.vcf.gz",
+        rp_tbi = "results/{refGenome}/SV/read_pair/{sample}/{sample}.vcf.gz.tbi"
     log:
         "logs/{refGenome}/SV/read_pair/{sample}.txt"
     benchmark:
         "benchmarks/{refGenome}/SV/read_pair/{sample}.txt"
     # resources:
     #     pass
+    params:
+        outdir = os.path.join(DEFAULT_STORAGE_PREFIX, "results/{refGenome}/SV/read_pair/{sample}/")
     conda:
-        "../envs/svArcher.yml"
+        "envs/manta.yml"
     shell:
-        # pass
+        """
+        configManta.py \
+            --bam {input.bam} \
+            --referenceFasta {input.ref} \
+            --runDir {params.outdir}
 
-rule read_depth:
-    """
-    Rule that implements the read depth methodology using ____
-    """
-    input:
-        unpack(get_bams)
-    output:
-        rd_vcf = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz"),
-        rd_tbi = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz.tbi")
-    log:
-        "logs/{refGenome}/SV/read_depth/{sample}.txt"
-    benchmark:
-        "benchmarks/{refGenome}/SV/read_depth/{sample}.txt"
-    resources:
-        pass
-    conda:
-        "../envs/svArcher.yml"
-    shell:
-        pass
+        python runWorkflow.py -j {threads}
+
+        """
+
+# rule read_depth:
+#     """
+#     Rule that implements the read depth methodology using ____
+#     """
+#     input:
+#         unpack(get_bams)
+#     output:
+#         rd_vcf = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz"),
+#         rd_tbi = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz.tbi")
+#     log:
+#         "logs/{refGenome}/SV/read_depth/{sample}.txt"
+#     benchmark:
+#         "benchmarks/{refGenome}/SV/read_depth/{sample}.txt"
+#     resources:
+#         pass
+#     conda:
+#         "envs/svArcher.yml"
+#     shell:
+#         pass
 
 rule split_read:
     """
@@ -78,7 +90,7 @@ rule split_read:
     benchmark:
         "benchmarks/{refGenome}/SV/split_read/{sample}.txt"
     conda:
-        "../envs/svArcher.yml"
+        "envs/svArcher.yml"
     shell:
     # Call SVs with lumpy express, compress, reheader and index SV call file
         """
