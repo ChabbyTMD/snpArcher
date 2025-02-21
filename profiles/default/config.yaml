@@ -81,7 +81,10 @@ set-threads:
   sentieon_haplotyper: 1
   sentieon_combine_gvcf: 1
   sentieon_bam_stats: 1 # Does NOT use more than 1 thread.
-
+  # svArcher Tools. Can use more than 1 thread.
+  read_pair: 8
+  read_depth: 8
+  split_read: 8
 # # Control other resources used by each rule.
 # set-resources:
 #   # Reference Genome Processing
