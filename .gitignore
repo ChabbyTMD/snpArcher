@@ -54,3 +54,5 @@ tmp/
 .test/ecoli/config/resources.yaml
 profiles/MESX
 Arabidopsis/
+Arabidopsis_Test/results
+Arabidopsis_Test/benchmarks
