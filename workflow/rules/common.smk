@@ -78,6 +78,8 @@ def get_output():
                         )
                     )
                 out.append(rules.trackhub_all.input)
+        if config["svCall"]:
+            out.append(rules.svArcher_all.input)
     return out
 
 
