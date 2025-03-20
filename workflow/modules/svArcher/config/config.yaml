@@ -2,5 +2,5 @@
 # Variables you need to change
 ##############################
 
-samples: "config/samples.csv" # path to the sample metadata CSV
+samples: "/usr/scratch2/userdata2/tmugoya/THESIS/Arabidopsis_Test/config/SraRunTable.csv" # path to the sample metadata CSV
 
