@@ -16,11 +16,11 @@ set-threads:
   create_db_intervals: 1
   picard_intervals: 1
   # Mappability
-  genmap: 1 # Can use more than 1 thread
+  genmap: 28 # Can use more than 1 thread
   mappability_bed: 1 # Does NOT use more than 1 thread
   # Fastq Processing. Can use more than 1 thread.
-  get_fastq_pe: 1 
-  fastp: 1
+  get_fastq_pe: 28
+  fastp: 28
   # Alignment. Can use more than 1 thread, except merge_bams.
   bwa_map: 48
   dedup: 1
@@ -81,9 +81,10 @@ set-threads:
   sentieon_haplotyper: 1
   sentieon_combine_gvcf: 1
   sentieon_bam_stats: 1 # Does NOT use more than 1 thread.
-  # svArcher Tools. Can use more than 1 thread.
+  # svArcher Tools. Can use more than 1 thread.(Experimental)
   read_pair: 8
-  read_depth: 8
+  lumpy_prep: 16
+  # read_depth: 8
   split_read: 8
 # # Control other resources used by each rule.
 # set-resources:
