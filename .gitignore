@@ -1,4 +1,6 @@
 .DS_Store
+pixi.lock
+pixi.toml
 data_preparation/
 .snakemake*
 template_slurm.sh
@@ -53,3 +55,7 @@ Arabidopsis_Test/results
 Arabidopsis_Test/benchmarks
 run_pipeline_local.sh
 workflow/modules/svArcher/envs/svArcher-bare.yml
+
+# pixi environments
+.pixi
+*.egg-info
