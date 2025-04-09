@@ -7,3 +7,4 @@ dependencies:
   - python==2.7.18
   - manta
   - root==6.20
+  - bcftools==1.10.2
