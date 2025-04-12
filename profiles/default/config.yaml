@@ -82,10 +82,12 @@ set-threads:
   sentieon_combine_gvcf: 1
   sentieon_bam_stats: 1 # Does NOT use more than 1 thread.
   # svArcher Tools. Can use more than 1 thread.(Experimental)
-  read_pair: 8
-  lumpy_prep: 16
-  # read_depth: 8
-  split_read: 8
+  discordant_extract: 8
+  split_read_extract: 8
+  sort_splits_discordants: 8
+  lumpy_call: 8
+  delly_call: 8
+  delly_vcf: 8
 # # Control other resources used by each rule.
 # set-resources:
 #   # Reference Genome Processing
