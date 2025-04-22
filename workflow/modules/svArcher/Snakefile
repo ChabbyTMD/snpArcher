@@ -1,5 +1,7 @@
 include: "common.smk"
-
+include: "rules/lumpy.smk"
+include: "rules/delly.smk"
+include: "rules/wham.smk"
 import sys
 import os
 from pathlib import Path
@@ -19,138 +21,6 @@ wildcard_constraints:
 samples = snparcher_utils.parse_sample_sheet(config)
 REFGENOME = samples['refGenome'].unique().tolist()
 
-# Define rules here
 rule all:
     input:
-        expand("results/{refGenome}/SV/{method}/{sample}.vcf.gz", refGenome=REFGENOME, method=["delly", "lumpy"], sample=samples["BioSample"].unique().tolist())
-
-
-rule discordant_extract:
-    input:
-        unpack(get_bams),
-    output:
-        unsorted_discordant_bam = temp("results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.unsorted.discordant.bam"),
-    log:
-        "logs/{refGenome}/SV/lumpy_prep/{sample}.discordant_extract.txt"
-    conda:
-        "envs/lumpy.yaml"
-    shell:
-        """
-        samtools view -b -F 1294 {input.bam} > {output.unsorted_discordant_bam} 2> {log}
-        """
-
-rule split_read_extract:
-    input:
-        unpack(get_bams),
-    output:
-        unsorted_split_read_bam = temp("results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.unsorted.split_read.bam"),
-    log:
-        "logs/{refGenome}/SV/lumpy_prep/{sample}.split_read_extract.txt"
-    conda:
-        "envs/lumpy.yaml"
-    shell:
-        """
-        samtools view -h {input.bam} \
-            | extractSplitReads_BwaMem -i stdin \
-            | samtools view -Sb - \
-            > {output.unsorted_split_read_bam} 2> {log}
-        """
-
-rule sort_splits_discordants:
-    input:
-        unsorted_discordant_bam = "results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.unsorted.discordant.bam",
-        unsorted_split_read_bam = "results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.unsorted.split_read.bam",
-    output:
-        discordant_bam = temp("results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.discordant.bam"),
-        split_read_bam = temp("results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.split_read.bam"),
-    log:
-        "logs/{refGenome}/SV/lumpy_prep/{sample}.sort_splits_discordants.txt"
-    conda:
-        "envs/lumpy.yaml"
-    shell:
-        """
-        samtools sort -o {output.discordant_bam} {input.unsorted_discordant_bam} 2> {log}
-        samtools sort -o {output.split_read_bam} {input.unsorted_split_read_bam} 2>> {log}
-        """
-
-rule lumpy_call:
-    """
-    Rule that implements the split read methodology using lumpy
-    """
-    input:
-        unpack(get_bams),
-        fai = "results/{refGenome}/data/genome/{refGenome}.fna.fai",
-        sorted_discordant_bam = "results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.discordant.bam",
-        sorted_split_read_bam = "results/{refGenome}/SV/lumpy_prep/{sample}/{sample}.split_read.bam",
-    output:
-        lumpy_vcf = temp("results/{refGenome}/SV/lumpy/{sample}.vcf"),
-        lumpy_vcf_gz = "results/{refGenome}/SV/lumpy/{sample}.vcf.gz",
-    log:
-        "logs/{refGenome}/SV/lumpy/{sample}.txt"
-    conda:
-        "envs/svArcher.yml"
-    shell:
-    # Call SVs with lumpy express, compress, reheader and index SV call file # changed
-    # NOTE: check vcf file after calling whether chromosome names are correct
-        """
-        lumpyexpress \
-            -B {input.bam} \
-            -S {input.sorted_split_read_bam} \
-            -D {input.sorted_discordant_bam} \
-            -o {output.lumpy_vcf} 2> {log}
-        bgzip -c {output.lumpy_vcf} > {output.lumpy_vcf_gz}
-        """
-
-rule delly_call:
-    input:
-        unpack(get_bams),
-        ref = "results/{refGenome}/data/genome/{refGenome}.fna",
-    output:
-        delly_bcf=temp("results/{refGenome}/SV/delly/{sample}.bcf"),
-        delly_csi=temp("results/{refGenome}/SV/delly/{sample}.bcf.csi"),
-    log:
-        "logs/{refGenome}/SV/delly/{sample}.log"
-    conda:
-        "envs/delly.yaml"
-    shell:
-        "delly call -g {input.ref} -o {output.delly_bcf} {input.bam} 2> {log}"
-
-
-rule delly_vcf:
-    input:
-        delly_bcf="results/{refGenome}/SV/delly/{sample}.bcf",
-    output:
-        delly_vcf="results/{refGenome}/SV/delly/{sample}.vcf.gz",
-    conda:
-        "envs/delly.yaml"
-    log:
-        "logs/{refGenome}/SV/delly/{sample}_vcf.log"
-    shell:
-        "bcftools view {input} -O z -o {output} 2> {log}"
-
-# rule read_depth:
-#     """
-#     Rule that implements the read depth methodology using ____
-#     """
-#     input:
-#         unpack(get_bams)
-#     output:
-#         rd_vcf = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz"),
-#         rd_tbi = temp("results/{refGenome}/SV/read_depth/{sample}.vcf.gz.tbi")
-#     log:
-#         "logs/{refGenome}/SV/read_depth/{sample}.txt"
-#     benchmark:
-#         "benchmarks/{refGenome}/SV/read_depth/{sample}.txt"
-#     resources:
-#         pass
-#     conda:
-#         "envs/svArcher.yml"
-#     shell:
-#         pass
-# Rule to merge SVS from all methods
-
-# Rule to filter SV calls from all methods
-
-# Rule to combine SV calls per sample
-
-# Rule to benchamrk SV calls against Arabidopsis Gotkay set
+        svArcher_output,
