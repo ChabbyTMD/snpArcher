@@ -30,3 +30,19 @@ def get_bams(wc):
         return out
     else:
         return dedup_input(wc)
+
+def read_contig_file(contig_file: str) -> list[str]:
+    """
+    Reads a one column csv file containing contig names a user would want to call SV's into a list of contig names.
+    
+    """
+    with open(contig_file, "r") as file:
+        contigs = [line.strip() for line in file]
+    return contigs
+
+# TODO: Define function to handle svArcher outputs.
+
+def svArcher_output(wildcards):
+    output = []
+    output.extend(expand("results/{refGenome}/SV/{method}/{sample}.vcf.gz", refGenome=REFGENOME, method=["delly", "lumpy", "wham"], sample=samples["BioSample"].unique().tolist()))
+    return output
