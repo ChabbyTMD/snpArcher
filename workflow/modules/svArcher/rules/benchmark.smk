@@ -1,0 +1,1 @@
+# Rule to benchamrk SV calls against Arabidopsis Gotkay set
