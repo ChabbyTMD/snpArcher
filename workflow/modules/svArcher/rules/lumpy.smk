@@ -58,7 +58,6 @@ rule lumpy_call:
     output:
         lumpy_vcf = temp("results/{refGenome}/SV/lumpy/{sample}.vcf"),
         lumpy_vcf_gz = "results/{refGenome}/SV/lumpy/{sample}.vcf.gz",
-        lumpy_tbi = "results/{refGenome}/SV/lumpy/{sample}.vcf.gz.tbi",
     log:
         "logs/{refGenome}/SV/lumpy/{sample}.txt"
     conda:
@@ -73,5 +72,4 @@ rule lumpy_call:
             -D {input.sorted_discordant_bam} \
             -o {output.lumpy_vcf} 2> {log}
         bgzip -c {output.lumpy_vcf} > {output.lumpy_vcf_gz}
-        tabix -p vcf {output.lumpy_vcf_gz}
         """
