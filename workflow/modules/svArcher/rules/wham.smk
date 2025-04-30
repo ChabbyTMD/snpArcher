@@ -4,7 +4,7 @@ rule wham_call:
 		unpack(get_bams),
 		ref = "results/{refGenome}/data/genome/{refGenome}.fna",
 	output:
-		wham_vcf=temp("results/{refGenome}/SV/wham/{sample}.vcf"),
+		wham_vcf=temp("results/{refGenome}/SV/wham/{sample}.raw.vcf"),
 	log:
 		"logs/{refGenome}/SV/wham/{sample}.log"
 	conda:
@@ -16,18 +16,18 @@ rule wham_call:
 		"""
 		whamg -x {threads} -c {params.contigs} -a {input.ref} -f {input.bam} > {output.wham_vcf} 2> {log}
 		"""
-rule wham_vcf_gzip:
+rule fix_whamcall_header:
+	"""
+	Add contig ID and length to wham vcf file
+	"""
 	input:
-		wham_vcf="results/{refGenome}/SV/wham/{sample}.vcf",
+		wham_vcf = "results/{refGenome}/SV/wham/{sample}.raw.vcf",
+		fai = "results/{refGenome}/data/genome/{refGenome}.fna.fai",
 	output:
-		wham_vcf_gz = "results/{refGenome}/SV/wham/{sample}.vcf.gz",
-		wham_tbi = "results/{refGenome}/SV/wham/{sample}.vcf.gz.tbi",
+		"results/{refGenome}/SV/wham/{sample}.vcf",
 	conda:
 		"../envs/wham.yaml"
-	log:
-		"logs/{refGenome}/SV/wham/{sample}.vcf.gz.log"
 	shell:
 		"""
-		bgzip -c {input.wham_vcf} > {output.wham_vcf_gz}
-		tabix -p vcf {output.wham_vcf_gz}
+		bcftools reheader -f {input.fai} -o {output} {input.wham_vcf}
 		"""
