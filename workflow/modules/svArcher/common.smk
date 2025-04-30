@@ -40,9 +40,15 @@ def read_contig_file(contig_file: str) -> list[str]:
         contigs = [line.strip() for line in file]
     return contigs
 
-# TODO: Define function to handle svArcher outputs.
 
 def svArcher_output(wildcards):
     output = []
-    output.extend(expand("results/{refGenome}/SV/{method}/{sample}.vcf.gz", refGenome=REFGENOME, method=["delly", "lumpy", "wham"], sample=samples["BioSample"].unique().tolist()))
+    # Return SV calls from all methods
+    output.extend(expand("results/{refGenome}/SV/{method}/{sample}.vcf", refGenome=REFGENOME, method=["delly", "lumpy", "wham"], sample=samples["BioSample"].unique().tolist()))
+    # Return merged SV calls per sample
+    output.extend(expand("results/{refGenome}/SV/postprocess/raw_merge/{sample}.vcf", refGenome=REFGENOME, sample=samples["BioSample"].unique().tolist()))
+    # Return processed SV calls per sample
+    output.extend(expand("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf", refGenome=REFGENOME, sample=samples["BioSample"].unique().tolist()))
+    # Return an all sample merged vcf
+    output.extend(expand("results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf", refGenome=REFGENOME))
     return output
