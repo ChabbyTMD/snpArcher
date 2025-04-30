@@ -7,3 +7,4 @@ dependencies:
   - svtyper==0.7.1
   - samtools==1.13
   - htslib
+  - bcftools
