@@ -2,7 +2,8 @@ wildcard_constraints:
     sample="[a-zA-Z0-9_]+"
 
 ruleorder:
-    fix_lumpycall_header > lumpy_call
+    # fix_lumpycall_header > lumpy_call
+    lumpy_call > fix_lumpycall_header
 
 rule discordant_extract:
     input:
