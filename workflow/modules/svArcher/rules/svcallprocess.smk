@@ -1,3 +1,4 @@
+# TODO Add rule order for final svcallprocess output
 # Sort vcf files from delly, lumpy and wham
 
 rule sort_vcfs:
