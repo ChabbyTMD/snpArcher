@@ -1,4 +1,3 @@
-# TODO Add rule order for final svcallprocess output
 # Sort vcf files from delly, lumpy and wham
 
 rule sort_vcfs:
@@ -39,14 +38,14 @@ rule sample_sv_call_merge:
 		# Create a file with the paths to the vcf files
 		# This is needed for survivor merge
 		ls {input.delly_vcf} {input.lumpy_vcf} {input.wham_vcf} > {params.sample_file}
-		SURVIVOR merge {params.sample_file} 1000 3 1 1 0 50 {output.merged_vcf} 2> {log}
+		SURVIVOR merge {params.sample_file} 500 1 1 1 0 50 {output.merged_vcf} 2> {log}
 		"""
-# Rule to filter SV calls from all methods
+
 rule filter_sv_calls:
     input:
         merged_vcf="results/{refGenome}/SV/postprocess/raw_merge/{sample}.vcf",
     output:
-        filtered_vcf=temp("results/{refGenome}/SV/postprocess/filtered/{sample}.filtered.vcf"),
+        filtered_vcf="results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf",
 
     conda:
         "../envs/survivor.yaml"
@@ -55,17 +54,61 @@ rule filter_sv_calls:
     shell:
         """
 		# Filter out SV calls with length > 10kb
-        bcftools view -i 'SVLEN <= 10000' {input.merged_vcf} -o {output.filtered_vcf} 2> {log}
+        bcftools view -i 'abs(SVLEN) <= 10000' {input.merged_vcf} -o {output.filtered_vcf} 2> {log}
         """
-rule post_filter_process:
+# Rule to get paths of all processed VCF files
+tmp_VAR = glob_wildcards("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf")
+rule get_processed_vcf_paths:
+    input:
+        processed_vcfs=lambda wc: expand(
+            "results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf",
+            refGenome=wc.refGenome,
+            sample=tmp_VAR.sample
+        ),
+    output:
+        path_list="results/{refGenome}/SV/postprocess/processed/all_samples.txt",
+    run:
+        import os
+        # Create directory if needed
+        os.makedirs(os.path.dirname(output.path_list), exist_ok=True)
+        # Write sorted VCF paths to list
+        with open(output.path_list, "w") as out_f:
+            for p in sorted(input.processed_vcfs):
+                out_f.write(p + "\n")
+
+# Define a default value for refGenome if not provided
+REF_GENOME = config.get("refGenome", "GCF_000001735.3")
+
+# Update rules to use the default value
+rule all_sample_merge:
+    input:
+        # Use the file containing the list of VCF paths as input
+        path_list="results/{refGenome}/SV/postprocess/processed/all_samples.txt",
+    output:
+        merged_vcf="results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf",
+    conda:
+        "../envs/survivor.yaml",
+    log:
+        "logs/{refGenome}/SV/postprocess/all_samples.log",
+    shell:
+        """
+        # SURVIVOR merge takes the file with paths as the first argument
+        SURVIVOR merge {input.path_list} 500 1 1 1 0 50 {output.merged_vcf} 2> {log}
+        """
+rule alt_metadata_save:
+    input:
+        vcf_file="results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf",
+    output:
+        metadata_file="results/{refGenome}/SV/sv_metadata/metadata.tsv"
+    shell:
+        """
+        grep -v "^#" {input.vcf_file} | awk -F"\t" 'BEGIN{{OFS="\t"}} {{print $1, $3, $5}}' > {output.metadata_file}
+        """
+rule post_merge_process:
 	input:
-		filtered_vcf="results/{refGenome}/SV/postprocess/filtered/{sample}.filtered.vcf",
+		merged_vcf="results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf",
 	output:
-		processed_vcf="results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf",
-	conda:
-		"../envs/survivor.yaml"
-	log:
-		"logs/{refGenome}/SV/postprocess/{sample}.post_filter.log"
+		final_vcf="results/{refGenome}/SV/postprocess/processed/all_samples_final.vcf",
 	shell:
 		"""
 		awk '
@@ -93,29 +136,5 @@ rule post_filter_process:
 		}}
 		# Print other records unchanged
 		{{ print }}
-		' {input.filtered_vcf} > {output.processed_vcf} 2> {log}
+		' {input.merged_vcf} > {output.final_vcf}
 		"""
-
-# Define a default value for refGenome if not provided
-REF_GENOME = config.get("refGenome", "GCF_000001735.4")
-
-# Update rules to use the default value
-rule all_sample_merge:
-    input:
-        processed_vcfs=expand("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf", refGenome=REF_GENOME, sample=glob_wildcards("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf").sample),
-    output:
-        "results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf",
-    conda:
-        "../envs/survivor.yaml",
-    log:
-        "logs/{refGenome}/SV/postprocess/all_samples.log",
-    params:
-        sample_vcfs = "results/{refGenome}/SV/postprocess/processed/all_samples.txt",
-    shell:
-        """
-        # Merge all processed vcf files into one
-        ls {input.processed_vcfs} > {params.sample_vcfs}
-        SURVIVOR merge {params.sample_vcfs} 1000 1 1 1 0 50 {output} 2> {log}
-        """
-# 
- # processed_vcfs=expand("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf", refGenome=REF_GENOME, sample=glob_wildcards("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf").sample),
