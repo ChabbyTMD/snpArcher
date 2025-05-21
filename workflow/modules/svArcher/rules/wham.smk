@@ -11,7 +11,7 @@ rule wham_call:
 		"../envs/wham.yaml"
 	params:
 		contigs = read_contig_file(config["include_contigs"])
-	threads: 7
+	threads: 10
 	shell:
 		"""
 		whamg -x {threads} -c {params.contigs} -a {input.ref} -f {input.bam} > {output.wham_vcf} 2> {log}
