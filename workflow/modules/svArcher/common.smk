@@ -51,4 +51,6 @@ def svArcher_output(wildcards):
     output.extend(expand("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf", refGenome=REFGENOME, sample=samples["BioSample"].unique().tolist()))
     # Return an all sample merged vcf
     output.extend(expand("results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf", refGenome=REFGENOME))
+    output.extend(expand("results/{refGenome}/SV/postprocess/processed/all_samples_final.vcf", refGenome=REFGENOME))
+    output.extend(expand("results/{refGenome}/SV/sv_metadata/metadata.tsv", refGenome=REFGENOME))
     return output
