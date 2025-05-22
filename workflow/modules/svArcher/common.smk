@@ -32,9 +32,6 @@ def get_bams(wc):
         return dedup_input(wc)
 
 def read_contig_file(contig_file: str) -> list[str]:
-    """
-    Reads a one column csv file containing contig names a user would want to call SV's into a list of contig names.
-    """
     try:
         with open(contig_file, "r") as file:
             contigs = [line.strip() for line in file if line.strip()]
