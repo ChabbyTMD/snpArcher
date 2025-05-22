@@ -34,11 +34,19 @@ def get_bams(wc):
 def read_contig_file(contig_file: str) -> list[str]:
     """
     Reads a one column csv file containing contig names a user would want to call SV's into a list of contig names.
-    
     """
-    with open(contig_file, "r") as file:
-        contigs = [line.strip() for line in file]
-    return contigs
+    try:
+        with open(contig_file, "r") as file:
+            contigs = [line.strip() for line in file if line.strip()]
+        if not contigs:
+            logger.warning(f"Contig file {contig_file} is empty")
+        return contigs
+    except FileNotFoundError:
+        logger.error(f"Contig file {contig_file} not found")
+        raise
+    except Exception as e:
+        logger.error(f"Error reading contig file {contig_file}: {e}")
+        raise
 
 
 def svArcher_output(wildcards):
