@@ -98,7 +98,7 @@ svBenchmark: False
 # Benchmark Truth set paths
 deletions: "benchmark_truth/"
 duplications: "benchmark_truth/"
-inversions: "benchmark_truth/inv1_bench/"
+inversions: "benchmark_truth/"
 
 
 
