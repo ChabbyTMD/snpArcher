@@ -12,8 +12,8 @@ rule generate_sv_benchmark_test_vcfs:
     shell:
         """
         bcftools view -i 'INFO/SVTYPE=="DEL"' {input.filtered_vcf} > {output.del_vcf}
-        bcftools view -i 'INFO/SVTYPE="DUP"' {input.filtered_vcf} > {output.dup_vcf}
-        bcftools view -i 'INFO/SVTYPE="INV"' {input.filtered_vcf} > {output.inv_vcf}
+        bcftools view -i 'INFO/SVTYPE=="DUP"' {input.filtered_vcf} > {output.dup_vcf}
+        bcftools view -i 'INFO/SVTYPE=="INV"' {input.filtered_vcf} > {output.inv_vcf}
         """
 
 rule sort_and_index_vcfs:
