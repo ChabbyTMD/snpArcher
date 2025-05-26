@@ -3,6 +3,7 @@ include: "rules/lumpy.smk"
 include: "rules/delly.smk"
 include: "rules/wham.smk"
 include: "rules/svcallprocess.smk"
+include: "rules/benchmark.smk"
 import sys
 import os
 from pathlib import Path
