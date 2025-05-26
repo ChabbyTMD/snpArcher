@@ -58,4 +58,6 @@ def svArcher_output(wildcards):
     output.extend(expand("results/{refGenome}/SV/postprocess/processed/all_samples_merged.vcf", refGenome=REFGENOME))
     output.extend(expand("results/{refGenome}/SV/postprocess/processed/all_samples_final.vcf", refGenome=REFGENOME))
     output.extend(expand("results/{refGenome}/SV/sv_metadata/metadata.tsv", refGenome=REFGENOME))
+    if config["svBenchmark"]:
+        output.extend(expand("results/{refGenome}/SV/benchmark/{svType}/{svType}_METRICS/summary.json", refGenome=REFGENOME, svType=["DEL", "INV", "DUP"], sample=samples["BioSample"].unique().tolist()))
     return output
