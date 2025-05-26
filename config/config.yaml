@@ -93,7 +93,7 @@ cov_threshold_rel:
 
 # Activate SV calling module
 svCall: True
-include_contigs: "/data/backup_2025/trevor/THESIS_snpArcher/Arabidopsis/config/include_contigs.csv"
+include_contigs: "config/include_contigs.csv"
 
 
 
