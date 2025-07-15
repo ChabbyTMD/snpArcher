@@ -20,7 +20,7 @@ rule sort_vcfs:
 		bcftools sort {input.wham_vcf} -o {output.wham_vcf_sorted} 2>> {log}
 		"""
 # Rule to merge SVS from all methods
-rule sample_sv_call_merge:
+checkpoint sample_sv_call_merge:
 	input:
 		delly_vcf="results/{refGenome}/SV/delly/{sample}.sorted.vcf",
 		lumpy_vcf="results/{refGenome}/SV/lumpy/{sample}.sorted.vcf",
@@ -41,7 +41,7 @@ rule sample_sv_call_merge:
 		SURVIVOR merge {params.sample_file} 500 1 1 1 0 50 {output.merged_vcf} 2> {log}
 		"""
 
-rule filter_sv_calls:
+checkpoint filter_sv_calls:
     input:
         merged_vcf="results/{refGenome}/SV/postprocess/raw_merge/{sample}.vcf",
     output:
