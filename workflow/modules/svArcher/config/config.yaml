@@ -1,0 +1,8 @@
+##############################
+# Variables you need to change
+##############################
+
+# path to the sample metadata CSV
+samples: "/usr/scratch2/userdata2/tmugoya/THESIS/Arabidopsis_Test/config/SraRunTable.csv" 
+# path to csv file with list of contigs to exclude(Required by wham sv caller)
+include_contigs: "/data/backup_2025/trevor/THESIS_snpArcher/Arabidopsis/config/include_contigs.csv"

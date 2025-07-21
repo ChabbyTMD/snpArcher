@@ -47,7 +47,7 @@ rule index_reference:
     input:
         ref = "results/{refGenome}/data/genome/{refGenome}.fna"
     output:
-        indexes = expand("results/{{refGenome}}/data/genome/{{refGenome}}.fna.{ext}", ext=["sa", "pac", "bwt", "ann", "amb"]),
+        indexes = expand("results/{{refGenome}}/data/genome/{{refGenome}}.fna.{ext}", ext=["0123", "pac", "bwt.2bit.64", "ann", "amb"]),
         fai = "results/{refGenome}/data/genome/{refGenome}.fna.fai",
         dictf = "results/{refGenome}/data/genome/{refGenome}.dict"
     conda:
@@ -58,7 +58,7 @@ rule index_reference:
         "benchmarks/{refGenome}/index_ref/benchmark.txt"
     shell:
         """
-        bwa index {input.ref} 2> {log}
+        bwa-mem2 index {input.ref} 2> {log}
         samtools faidx {input.ref} --output {output.fai} >> {log}
         samtools dict {input.ref} -o {output.dictf} >> {log} 2>&1
         """

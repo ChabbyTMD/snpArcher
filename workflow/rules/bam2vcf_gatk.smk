@@ -7,7 +7,7 @@ rule bam2gvcf:
     input:
         unpack(get_bams),
         ref = "results/{refGenome}/data/genome/{refGenome}.fna",
-        indexes = expand("results/{{refGenome}}/data/genome/{{refGenome}}.fna.{ext}", ext=["sa", "pac", "bwt", "ann", "amb", "fai"]),
+        indexes = expand("results/{{refGenome}}/data/genome/{{refGenome}}.fna.{ext}", ext=["0123", "pac", "bwt.2bit.64", "ann", "amb", "fai"]),
         dictf = "results/{refGenome}/data/genome/{refGenome}.dict",
         
     output:

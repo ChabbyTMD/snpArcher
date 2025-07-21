@@ -58,6 +58,13 @@ module trackhub:
 
 use rule * from trackhub as trackhub_*
 
+module svArcher:
+    snakefile:
+        "modules/svArcher/Snakefile"
+    config:
+        config
+use rule * from svArcher as svArcher_*
+
 rule all:
     input:
         get_output()
