@@ -91,6 +91,16 @@ cov_threshold_stdev:
 
 cov_threshold_rel: 
 
+# Activate SV calling module
+svCall: False
+include_contigs: "config/include_contigs.csv"
+svBenchmark: False
+# Benchmark Truth set paths
+deletions: "benchmark_truth/"
+duplications: "benchmark_truth/"
+inversions: "benchmark_truth/"
+
+
 
 
 
