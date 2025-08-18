@@ -71,6 +71,6 @@ Arabidopsis_Test/results
 Arabidopsis_Test/benchmarks
 run_pipeline_local.sh
 workflow-profiles/lab_workstation/
-BEETLE_2025
-FULL_ARABIDOPSIS
-HOP_2025
+BEETLE_2025/
+FULL_ARABIDOPSIS/
+HOP_2025/
