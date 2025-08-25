@@ -8,7 +8,9 @@ cluster-generic-submit-cmd:
     --nodes=1
     --ntasks=1
     --cpus-per-task={threads}
+    --time={resources.runtime}
     --output=slurmlogs/{rule}/{rule}-{wildcards}-%j.out
+    --error=slurmlogs/{rule}/{rule}-{jobid}-%j.err \
     --parsable
 
 # Snakemake options
@@ -33,7 +35,7 @@ default-resources:
   # Uncomment and edit following options for slurm execution:
   # slurm_partition: ""
   # slurm_account: # Same as sbatch -A. Not all clusters use this.
-  # runtime: 720 # In minutes
+  runtime: 180 # In minutes
   # slurm_nodes: 5
 
 # Control number of threads each rule will use.
