@@ -1,0 +1,5 @@
+Download Coccinella septempunctata
+https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_907165205.1/
+
+FTP link
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/907/165/205/GCF_907165205.1_icCocSept1.1/GCF_907165205.1_icCocSept1.1_genomic.fna.gz
