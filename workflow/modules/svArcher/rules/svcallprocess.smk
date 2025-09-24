@@ -1,10 +1,21 @@
-# Sort vcf files from delly, lumpy and wham
+# Checkpoint rule to ensure all SV caller outputs are available before processing
+checkpoint ensure_sv_calls_complete:
+    input:
+        get_sv_caller_outputs
+    output:
+        touch("results/{refGenome}/SV/postprocess/.sv_calls_complete")
+    shell:
+        """
+        echo "All SV caller outputs are available, proceeding with post-processing"
+        """
 
+# Sort vcf files from delly, lumpy and wham
 rule sort_vcfs:
 	input:
 		delly_vcf="results/{refGenome}/SV/delly/{sample}.vcf",
 		lumpy_vcf="results/{refGenome}/SV/lumpy/{sample}.vcf",
 		wham_vcf="results/{refGenome}/SV/wham/{sample}.vcf",
+		checkpoint="results/{refGenome}/SV/postprocess/.sv_calls_complete",
 	output:
 		delly_vcf_sorted="results/{refGenome}/SV/delly/{sample}.sorted.vcf",
 		lumpy_vcf_sorted="results/{refGenome}/SV/lumpy/{sample}.sorted.vcf",
@@ -57,13 +68,12 @@ checkpoint filter_sv_calls:
         bcftools view -i 'abs(SVLEN) <= 10000' {input.merged_vcf} -o {output.filtered_vcf} 2> {log}
         """
 # Rule to get paths of all processed VCF files
-tmp_VAR = glob_wildcards("results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf")
 rule get_processed_vcf_paths:
     input:
         processed_vcfs=lambda wc: expand(
             "results/{refGenome}/SV/postprocess/processed/{sample}.processed.vcf",
             refGenome=wc.refGenome,
-            sample=tmp_VAR.sample
+            sample=samples["BioSample"].unique().tolist()
         ),
     output:
         path_list="results/{refGenome}/SV/postprocess/processed/all_samples.txt",

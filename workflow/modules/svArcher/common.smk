@@ -46,10 +46,19 @@ def read_contig_file(contig_file: str) -> list[str]:
         raise
 
 
+def get_sv_caller_outputs(wildcards):
+    """Get all SV caller outputs that must be completed before post-processing"""
+    return expand(
+        "results/{refGenome}/SV/{method}/{sample}.vcf",
+        refGenome=REFGENOME,
+        method=["delly", "lumpy", "wham"],
+        sample=samples["BioSample"].unique().tolist()
+    )
+
 def svArcher_output(wildcards):
     output = []
     # Return SV calls from all methods
-    output.extend(expand("results/{refGenome}/SV/{method}/{sample}.vcf", refGenome=REFGENOME, method=["delly", "lumpy", "wham"], sample=samples["BioSample"].unique().tolist()))
+    output.extend(get_sv_caller_outputs(wildcards))
     # Return merged SV calls per sample
     output.extend(expand("results/{refGenome}/SV/postprocess/raw_merge/{sample}.vcf", refGenome=REFGENOME, sample=samples["BioSample"].unique().tolist()))
     # Return processed SV calls per sample
