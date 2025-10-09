@@ -74,3 +74,4 @@ workflow-profiles/lab_workstation/
 BEETLE_2025/
 FULL_ARABIDOPSIS/
 HOP_2025/
+REFERENCE/*.fna
